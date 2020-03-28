@@ -5,8 +5,130 @@ import lunar.LMesh
 import lunar.LVector
 import java.util.*
 
+fun boxMesh(boxWidth: Double, boxDepth: Double, boxHeight: Double, columns: Int, rows: Int, layers: Int) : LMesh{
+    var boxMesh: LMesh = LMesh()
 
-//TODO boxmesh
+    val step: LVector = LVector(boxWidth/columns, boxDepth/rows, boxHeight/layers)
+
+    var indexTable: Array<Array<Array<Int>>> =
+        Array(columns+1) {
+            Array(rows+1){
+                Array(layers+1){-1}
+            }
+        }
+
+    //Create vertices
+    var index: Int = 0
+    for(i in indexTable.indices){
+        for(j in indexTable[0].indices){
+            for(k in indexTable[0][0].indices){
+                boxMesh.vertices.add(LVector(i*step.x, j*step.y, k*step.z))
+                indexTable[i][j][k] = index
+                index++
+            }
+        }
+    }
+
+    //Create faces
+    for(j in 1 until indexTable[0].size)
+    {
+        for(k in 1 until indexTable[0][0].size){
+            //Left Plane
+            boxMesh.faces.add(
+                LFace(
+                    indexTable[0][j-1][k-1],
+                    indexTable[0][j][k-1],
+                    indexTable[0][j-1][k]
+                )
+            )
+
+            //Right Plane
+            boxMesh.faces.add(
+                LFace(
+                    indexTable[0][j][k-1],
+                    indexTable[0][j][k],
+                    indexTable[0][j-1][k]
+                )
+            )
+        }
+    }
+
+    for (i in 1 until indexTable.size) {
+        for (k in 1 until indexTable[0][0].size) {
+            //Front plane
+            boxMesh.faces.add(
+                LFace(
+                    indexTable[i-1][0][k],
+                    indexTable[i][0][k-1],
+                    indexTable[i-1][0][k-1]
+                )
+            )
+            boxMesh.faces.add(
+                LFace(
+                    indexTable[i-1][0][k],
+                    indexTable[i][0][k],
+                    indexTable[i][0][k-1]
+                )
+            )
+
+            //Back Plane
+            val l: Int = indexTable[0].size - 1
+            boxMesh.faces.add(
+                LFace(
+                    indexTable[i][l][k-1],
+                    indexTable[i][l][k],
+                    indexTable[i-1][l][k-1]
+                )
+            )
+            boxMesh.faces.add(
+                LFace(
+                    indexTable[i-1][l][k-1],
+                    indexTable[i][l][k],
+                    indexTable[i-1][l][k]
+                )
+            )
+        }
+    }
+
+    for (i in 1 until indexTable.size) {
+        for (j in 1 until indexTable[0].size) {
+            //Bottom Plane
+            boxMesh.faces.add(
+                LFace(
+                    indexTable[i-1][j-1][0],
+                    indexTable[i][j][0],
+                    indexTable[i-1][j][0]
+                )
+            )
+            boxMesh.faces.add(
+                LFace(
+                    indexTable[i][j-1][0],
+                    indexTable[i][j][0],
+                    indexTable[i-1][j-1][0]
+                )
+            )
+
+            //Top Plane
+            val l: Int = indexTable[0][0].size - 1
+            boxMesh.faces.add(
+                LFace(
+                    indexTable[i][j][l],
+                    indexTable[i][j-1][l],
+                    indexTable[i-1][j-1][l]
+                )
+            )
+            boxMesh.faces.add(
+                LFace(
+                    indexTable[i][j][l],
+                    indexTable[i-1][j-1][l],
+                    indexTable[i-1][j][l]
+                )
+            )
+        }
+    }
+
+    return boxMesh
+}
 
 fun planeMesh(planeWidth: Double, planeHeight: Double, columns: Int, rows: Int): LMesh {
     val planeMesh = LMesh()
@@ -35,9 +157,9 @@ fun planeMesh(planeWidth: Double, planeHeight: Double, columns: Int, rows: Int):
 
 fun triangleMesh(a: LVector, b: LVector, c: LVector): LMesh {
     val mesh = LMesh()
-    mesh.vertices.add(a!!)
-    mesh.vertices.add(b!!)
-    mesh.vertices.add(c!!)
+    mesh.vertices.add(a)
+    mesh.vertices.add(b)
+    mesh.vertices.add(c)
     mesh.faces.add(LFace(0, 1, 2))
     return mesh
 }
@@ -132,7 +254,7 @@ fun deletedVerticesMesh(mesh: LMesh, indexes: ArrayList<Int>): LMesh
         if (indexes[i] == i) pattern.add(false)
         else pattern.add(true)
     }
-    return culledVerticesMesh(mesh!!, pattern)
+    return culledVerticesMesh(mesh, pattern)
 }
 
 fun joinedMesh(meshes: ArrayList<LMesh>): LMesh

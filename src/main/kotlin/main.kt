@@ -20,7 +20,9 @@ fun main() = application {
         extend {
             drawer.background(ColorRGBa.BLACK)
 
-            var mesh : LMesh = lunar.meshes.planeMesh(500.0, 500.0, 10,10)
+            //var mesh : LMesh = lunar.meshes.planeMesh(500.0, 500.0, 10,10)
+            var mesh : LMesh = lunar.meshes.boxMesh(500.0, 500.0, 500.0, 10, 10, 10)
+
             for(i : Int in mesh.vertices.indices) mesh.vertices[i] = lunar.vectors.rotatedVector(mesh.vertices[i], lunar.vectors.zAxisVector(1.0), Math.PI*.125)
             for(i : Int in mesh.vertices.indices) mesh.vertices[i] = lunar.vectors.rotatedVector(mesh.vertices[i], lunar.vectors.xAxisVector(1.0), Math.PI*.25)
             for(i : Int in mesh.vertices.indices) mesh.vertices[i] = lunar.vectors.addedVector(mesh.vertices[i], LVector(400.0,400.0,0.0))
