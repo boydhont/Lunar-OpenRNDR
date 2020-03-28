@@ -5,6 +5,7 @@ import lunar.LMesh
 import lunar.LVector
 import java.util.*
 
+
 fun boxMesh(boxWidth: Double, boxDepth: Double, boxHeight: Double, columns: Int, rows: Int, layers: Int) : LMesh{
     var boxMesh: LMesh = LMesh()
 
@@ -30,24 +31,38 @@ fun boxMesh(boxWidth: Double, boxDepth: Double, boxHeight: Double, columns: Int,
     }
 
     //Create faces
-    for(j in 1 until indexTable[0].size)
-    {
-        for(k in 1 until indexTable[0][0].size){
+    for (j in 1 until indexTable[0].size) {
+        for (k in 1 until indexTable[0][0].size) {
             //Left Plane
             boxMesh.faces.add(
                 LFace(
-                    indexTable[0][j-1][k-1],
-                    indexTable[0][j][k-1],
-                    indexTable[0][j-1][k]
+                    indexTable[0][j - 1][k - 1],
+                    indexTable[0][j][k - 1],
+                    indexTable[0][j - 1][k]
+                )
+            )
+            boxMesh.faces.add(
+                LFace(
+                    indexTable[0][j][k - 1],
+                    indexTable[0][j][k],
+                    indexTable[0][j - 1][k]
                 )
             )
 
             //Right Plane
+            val l: Int = indexTable.size - 1
             boxMesh.faces.add(
                 LFace(
-                    indexTable[0][j][k-1],
-                    indexTable[0][j][k],
-                    indexTable[0][j-1][k]
+                    indexTable[l][j][k - 1],
+                    indexTable[l][j - 1][k - 1],
+                    indexTable[l][j][k]
+                )
+            )
+            boxMesh.faces.add(
+                LFace(
+                    indexTable[l][j - 1][k],
+                    indexTable[l][j][k],
+                    indexTable[l][j - 1][k - 1]
                 )
             )
         }
